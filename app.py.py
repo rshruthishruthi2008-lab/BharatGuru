@@ -5,7 +5,13 @@ st.set_page_config(page_title="BharatGuru", layout="wide")
 
 with st.sidebar:
     st.title("Settings")
-    api_key = st.text_input("Paste API Key Here", type="password")
+    # Get key from Secrets first
+    if "GEMINI_API_KEY" in st.secrets:
+        api_key = st.secrets["GEMINI_API_KEY"]
+        st.success("API Key loaded from Secrets ✅")
+    else:
+        api_key = st.text_input("Paste API Key Here", type="password")
+    
     language = st.selectbox("Language", ["English", "Kannada", "Hindi"])
     exam = st.selectbox("Exam", ["UPSC", "KPSC", "SSC", "Banking"])
 
@@ -18,13 +24,11 @@ if st.button("Get Answer 🚀"):
     else:
         try:
             client = genai.Client(api_key=api_key)
-            prompt = f"You are BharatGuru for {exam}. Answer in {language}. Question: {query}"
-            
+            prompt = f"You are BharatGuru, expert for {exam} exam. Answer in {language} language. Question: {query}. Give detailed exam-oriented answer."
             response = client.models.generate_content(
-                model="gemini-3.6-flash",
+                model="gemini-2.0-flash",
                 contents=prompt
             )
-            st.success("Answer:")
-            st.write(response.text)
+            st.success(response.text)
         except Exception as e:
-            st.error(f"Error: {e}")
+            st.error(f"Error: {e}. Try again after 30 sec if model overloaded.")
