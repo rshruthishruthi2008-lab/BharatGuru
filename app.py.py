@@ -26,7 +26,7 @@ if st.button("Get Answer 🚀"):
             client = genai.Client(api_key=api_key)
             prompt = f"You are BharatGuru, expert for {exam} exam. Answer in {language} language. Question: {query}. Give detailed exam-oriented answer."
             response = client.models.generate_content(
-                model="gemini-2.0-flash",
+                model="gemini-3.6-flash",
                 contents=prompt
             )
             st.success(response.text)
