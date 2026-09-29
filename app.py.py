@@ -6,10 +6,9 @@ st.set_page_config(page_title="BharatGuru", layout="wide")
 
 with st.sidebar:
     st.title("Settings")
-    # Try to get key from Secrets first
     if "GEMINI_API_KEY" in st.secrets:
         api_key = st.secrets["GEMINI_API_KEY"]
-        st.success("API Key loaded from Secrets ✅")
+        st.success("API Key loaded ✅")
     else:
         api_key = st.text_input("Paste API Key Here", type="password")
 
@@ -17,32 +16,34 @@ with st.sidebar:
     exam = st.selectbox("Exam", ["UPSC", "KPSC", "SSC", "Banking"])
 
 st.title("🇮🇳 BharatGuru - AI For All Exams")
-query = st.text_area("Ask Any Doubt:", "what is the capital of India")
+query = st.text_area("Ask Any Doubt:", "define data type")
 
 if st.button("Get Answer 🚀"):
     if not api_key:
-        st.error("Paste API key in sidebar!")
+        st.error("Add API Key in Secrets!")
     else:
         try:
             client = genai.Client(api_key=api_key)
             prompt = f"You are BharatGuru for {exam}. Answer in {language}. Question: {query}"
             
-            # FIX for 429 - Auto try 3 models
-            for model_name in ["gemini-1.5-flash", "gemini-2.0-flash-lite", "gemini-2.0-flash"]:
+            # NEW MODELS - Works in new SDK + High Quota
+            models_list = ["gemini-2.0-flash-lite", "gemini-2.0-flash", "gemini-2.5-flash"]
+            
+            for model_name in models_list:
                 try:
+                    st.toast(f"Trying {model_name}...")
                     response = client.models.generate_content(model=model_name, contents=prompt)
                     st.success(f"Answer from {model_name}:")
                     st.write(response.text)
                     break
                 except Exception as e:
-                    if "429" in str(e):
-                        st.warning(f"{model_name} busy, trying next...")
+                    if "404" in str(e) or "429" in str(e):
                         time.sleep(1)
                         continue
                     else:
                         raise e
-        except Exception as e:
-            if "429" in str(e):
-                st.error("🙏 High Traffic! Wait 30 seconds and try again - Quota will reset!")
             else:
-                st.error(f"Error: {e}")
+                st.error("All models busy! Wait 30 sec - Quota resets every minute!")
+
+        except Exception as e:
+            st.error(f"Error: {e}")
