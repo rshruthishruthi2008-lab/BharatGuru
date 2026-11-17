@@ -1,2 +1,3 @@
-steamlit
-google-genai
+streamlit
+google-generativeai
+Pillow
