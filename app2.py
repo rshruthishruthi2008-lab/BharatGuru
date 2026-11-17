@@ -1,8 +1,8 @@
 import streamlit as st
 from PIL import Image
 
-st.set_page_config(page_title="BharatGuru ROCKET 12.3", layout="centered")
-st.title("🚀 BharatGuru ROCKET 12.3")
+st.set_page_config(page_title="BharatGuru ROCKET ", layout="centered")
+st.title("🚀 BharatGuru ROCKET ")
 st.caption("Google Free | Photo Doubt Supported")
 
 has_google = "GOOGLE_API_KEY" in st.secrets
